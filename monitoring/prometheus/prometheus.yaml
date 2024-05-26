@@ -1,0 +1,20 @@
+scrape_configs:
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['localhost:7071']
+
+  - job_name: 'clickhouse'
+    static_configs:
+      - targets: ['clickhouse-replica1:9116', 'clickhouse-replica2:9116']
+
+  - job_name: 'service_getter_microservice'
+    static_configs:
+      - targets: ['service_1_host:8000']
+
+  - job_name: 'service_validation_microservice'
+    static_configs:
+      - targets: ['service_2_host:8000']
+
+  - job_name: 'service_loaddata_microservice'
+    static_configs:
+      - targets: ['service_3_host:8000']
