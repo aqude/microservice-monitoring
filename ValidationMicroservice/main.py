@@ -24,7 +24,7 @@ async def handle_message(message):
         return validation_result.dict(), user_id, data
     except ValidationError as e:
         errors = e.errors()
-        error_message = "; ".join([f"{err['loc'][0]}: {err['msg']}" for err in errors])
+        error_message = "; ".join([f"{err['loc'][0]}: {err['msg']}\n" for err in errors])
         validation_result = ValidationResultChecker(success=False, msg=error_message,
                                                     user_id=data.get('user_id', 'unknown'))
         return validation_result.dict(), None, None
