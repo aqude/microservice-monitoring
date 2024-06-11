@@ -85,6 +85,7 @@ services:
         - clickhouse-keeper-01
         - clickhouse-keeper-02
         - clickhouse-keeper-03
+      
   clickhouse-02:
     image: "clickhouse/clickhouse-server:${CHVER:-latest}"
     user: "101:101"

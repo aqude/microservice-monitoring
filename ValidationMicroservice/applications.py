@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from typing import Literal
 
 from pydantic import BaseModel, Field, EmailStr, field_validator
 
@@ -14,13 +13,15 @@ class Application(BaseModel):
     address: str = Field(..., min_length=1, max_length=255, description="Адрес заявителя")
     date_of_birth: str = Field(..., description="Дата рождения заявителя")
     gender: str = Field(..., description="Пол заявителя")
+    event_type: str = Field(..., description="Тип события")
     event_description: str = Field(..., min_length=1, max_length=500, description="Описание события")
+    text: str = Field(..., min_length=1, max_length=1000, description="Текст заявки")
 
     @field_validator("address")
     def validate_address(cls, value):
-        address_regex = re.compile(r"ул. [А-Яа-я]*, д. \d*, кв. \d, [А-Яа-я]*, [А-Яа-я]*")
-        if not address_regex.match(value):
-            raise ValueError("Адрес должен быть в формате 'ул. Ленина, д. 1, кв. 1, г. Москва, Россия'")
+        # address_regex = re.compile(r"^[А-Яа-я]. [А-Яа-я]*, ул\. [А-Яа-я]*, д\. \d+ к\. \d+\/\d+, \d{6}$")
+        # if not address_regex.match(value):
+        #     raise ValueError("Адрес должен быть в формате 'с. Новомосковск, ул. Прохладная, д. 3 к. 2/3, 186418'")
         return value
     @field_validator('timestamp')
     def validate_timestamp(cls, value):
@@ -38,9 +39,10 @@ class Application(BaseModel):
 
     @field_validator('phone_number')
     def validate_phone_number(cls, value):
-        phone_regex = re.compile(r"^\+7\d{10}$")
-        if not phone_regex.match(value):
-            raise ValueError("Номер телефона должен быть в формате +7XXXXXXXXXX")
+        # phone_regex = re.compile(r"^\+7\d{10}$")
+        pattern = re.compile("^(\+7|7|8)\d{10}$")
+        if not pattern.match(value):
+            raise ValueError("Номер телефона должен быть в формате +7/8XXXXXXXXXX")
         return value
 
     @field_validator('date_of_birth')

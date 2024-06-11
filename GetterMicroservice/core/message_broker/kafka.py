@@ -30,17 +30,17 @@ async def send_to_kafka(application):
     finally:
         await producer.stop()
 
-
-# get validation result
 async def get_validation_result(user_id: str) -> ValidationResultChecker:
     consumer = AIOKafkaConsumer(
         RESULT_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-        group_id="validation_group"
+        group_id="validation_group",
+        enable_auto_commit=True,
+        auto_commit_interval_ms=5000,
     )
     await consumer.start()
     try:
-        timeout = 30  # Тайм-аут ожидания результата в секундах
+        timeout = 10  # Тайм-аут ожидания результата в секундах
         end_time = asyncio.get_event_loop().time() + timeout
         async for msg in consumer:
             result = ValidationResultChecker(**json.loads(msg.value.decode('utf-8')))

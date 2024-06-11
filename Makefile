@@ -1,2 +1,4 @@
 run: 
-	@echo "run docker compose and initialize database cluster" 
+	@echo "run docker compose and initialize database cluster"
+	@docker-compose up -d
+	

@@ -10,5 +10,6 @@ class ApplicationsModel(BaseModel):
     address: str = None
     date_of_birth: str = None
     gender: str = None
+    event_type: str = None
     event_description: str = None
     text: str = None
