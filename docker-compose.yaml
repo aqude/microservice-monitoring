@@ -1,6 +1,71 @@
 version: '3'
 
 services:
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    networks:
+      - internal
+    depends_on:
+      - getter_service
+      - loaddata_service
+      - validation_service
+    
+  getter_service:
+    container_name: getter-service
+    build: 
+      context: .
+      dockerfile: GetterMicroservice/Dockerfile.getter
+    ports:
+      - "5000:5000"
+    networks: 
+      - internal
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: 'kafka:29092'
+      VALIDATION_TOPIC: 'validation'
+      RESULT_TOPIC: 'validation_result'
+    restart: always
+
+  loaddata_service:
+    container_name: loaddata-service
+    build: 
+      context: .
+      dockerfile: LoadDataMicroservice/Dockerfile.loaddata
+    ports:
+      - "5001:5001"
+    networks:
+      - internal
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: 'kafka:29092'
+      VALIDATION_TOPIC: 'validation'
+      RESULT_TOPIC: 'validation_result'
+    restart: always
+
+  validation_service:
+    container_name: validation-service
+    build: 
+      context: .
+      dockerfile: ValidationMicroservice/Dockerfile.validation
+    ports:
+      - "5002:5002"
+    networks:
+      - internal
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: 'kafka:29092'
+      VALIDATION_TOPIC: 'validation'
+      RESULT_TOPIC: 'validation_result'
+    restart: always
+
   zookeeper:
     container_name: zookeeper
     image: confluentinc/cp-zookeeper
@@ -50,16 +115,19 @@ services:
       - internal
     environment:
       DYNAMIC_CONFIG_ENABLED: true
+    depends_on:
+      - kafka
+      - zookeeper
 # Prometheus
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus
-    ports:
-      - 9090:9090
-    networks: 
-      - internal
-    volumes:
-      - ./etc/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  # prometheus:
+  #   container_name: prometheus
+  #   image: prom/prometheus
+  #   ports:
+  #     - 9090:9090
+  #   networks: 
+  #     - internal
+  #   volumes:
+  #     - ./etc/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       
 # Grafana dashboard
   grafana:
@@ -85,6 +153,17 @@ services:
         - clickhouse-keeper-01
         - clickhouse-keeper-02
         - clickhouse-keeper-03
+      restart: always
+
+  init_clickhouse:
+    build: 
+      context: .
+      dockerfile: Dockerfile.clickhouse
+    depends_on:
+      - clickhouse-01
+
+
+      
       
   clickhouse-02:
     image: "clickhouse/clickhouse-server:${CHVER:-latest}"
@@ -159,17 +238,7 @@ services:
     ports:
         - "127.0.0.1:9183:9181"
 
-  nginx:
-      image: nginx:latest
-      container_name: nginx
-      networks:
-        - external
-      ports:
-        - "80:80"
-      volumes:
-        - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf
-      # depends_on:
-      #   - rest_api_service
+
 
 networks: 
   internal:

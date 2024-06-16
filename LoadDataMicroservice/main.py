@@ -1,13 +1,15 @@
 import asyncio
 import json
+import os
 from clickhouse_driver import Client
 from aiokafka import AIOKafkaConsumer
 
 from logger import Logger
 from scheme.application import Application
 
-VALIDATION_TOPIC = 'db_service'
-KAFKA_BOOTSTRAP_SERVERS = 'localhost:9092'
+KAFKA_BOOTSTRAP_SERVERS = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'kafka:29092')
+VALIDATION_TOPIC = os.getenv('VALIDATION_TOPIC', 'validation')
+RESULT_TOPIC = os.getenv('RESULT_TOPIC', 'validation_result')
 
 client = Client(host='localhost', port=9000)
 logger = Logger()

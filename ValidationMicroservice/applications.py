@@ -40,7 +40,7 @@ class Application(BaseModel):
     @field_validator('phone_number')
     def validate_phone_number(cls, value):
         # phone_regex = re.compile(r"^\+7\d{10}$")
-        pattern = re.compile("^(\+7|7|8)\d{10}$")
+        pattern = re.compile(r"^(\+7|7|8)\d{10}$")
         if not pattern.match(value):
             raise ValueError("Номер телефона должен быть в формате +7/8XXXXXXXXXX")
         return value

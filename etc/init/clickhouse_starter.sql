@@ -10,3 +10,14 @@ CREATE TABLE application (
     event_description String
 ) ENGINE = MergeTree() ORDER BY timestamp;
 
+CREATE TABLE logs_services
+(
+    timestamp   datetime,
+    service_name String,
+    event       String,
+    text        String,
+    error       Bool
+) ENGINE = MergeTree() ORDER BY timestamp;
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["clickhouse-server"]

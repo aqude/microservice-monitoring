@@ -1,13 +1,14 @@
 import asyncio
 import json
+import os
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 from fastapi import FastAPI
 from models.application import ApplicationsModel
 from models.validation_result import ValidationResultChecker
 
-KAFKA_BOOTSTRAP_SERVERS = 'localhost:9092'
-VALIDATION_TOPIC = 'validation'
-RESULT_TOPIC = 'validation_result'
+KAFKA_BOOTSTRAP_SERVERS = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'kafka:29092')
+VALIDATION_TOPIC = os.getenv('VALIDATION_TOPIC', 'validation')
+RESULT_TOPIC = os.getenv('RESULT_TOPIC', 'validation_result')
 producer: AIOKafkaProducer = None
 app = FastAPI()
 

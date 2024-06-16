@@ -1,0 +1,2 @@
+FROM yandex/clickhouse-server:latest
+COPY etc/init/clickhouse_starter.sql /docker-entrypoint-initdb.d/
